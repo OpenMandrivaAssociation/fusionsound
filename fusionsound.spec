@@ -1,6 +1,6 @@
 %define name    fusionsound
-%define version 0.9.25
-%define release %mkrel 2
+%define version 1.0.0
+%define release %mkrel 1
 
 %define major 0
 %define libname %mklibname %{name} %{major}
@@ -89,7 +89,8 @@ the playlist of the mixer thread in the master application.
 %dir %_libdir/directfb-*/interfaces/IFusionSound
 %dir %_libdir/directfb-*/interfaces/IFusionSoundMusicProvider
 %_libdir/directfb-*/interfaces/*/*.so
-%_bindir/fsmaster
+%_bindir/fs*
+%_mandir/*/%{name}*
 
 %files -n %libname
 %defattr(-,root,root)
@@ -100,10 +101,9 @@ the playlist of the mixer thread in the master application.
 %defattr(-,root,root)
 %doc AUTHORS ChangeLog TODO
 %_libdir/directfb-*/interfaces/*/*.la
-%_libdir/pkgconfig/fusionsound.pc
+%_libdir/directfb-*/snddrivers/lib%{name}*
+%_libdir/pkgconfig/fusionsound*.pc
 %_includedir/fusionsound 
 %_includedir/fusionsound-internal
 %_libdir/*.so
 %_libdir/*.la
-
-
