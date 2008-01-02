@@ -17,6 +17,7 @@ Source0:        FusionSound-%{version}.tar.bz2
 Group:          System/Libraries
 Summary:        An audio sub system
 BuildRequires:  DirectFB-devel => %directfbver
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Provides:	FusionSound
 Obsoletes:	FusionSound
 
