@@ -1,22 +1,28 @@
 %define name    fusionsound
-%define version 1.0.0
+%define version 1.1.1
 %define release %mkrel 1
 
-%define major 0
-%define libname %mklibname %{name} %{major}
-%define obslibname %{_lib}FusionSound
-
+%define api 1.1
+%define major 1
+%define libname %mklibname %{name} %{api} %{major}
+%define develname %mklibname %name -d
 %define directfbver %version
 
 Name:           %{name}
 Version:        %{version}
 Release:        %{release}
 License:        GPL
-Url:            http://directfb.org/fusionsound.xml
-Source0:        FusionSound-%{version}.tar.bz2
+Url:            http://www.directfb.org/index.php?path=Platform%2FFusionSound
+Source0:        http://www.directfb.org/downloads/Core/FusionSound-%{version}.tar.gz
+Patch0:		fusionsound-1.1.1-new-ffmpeg-header.patch
 Group:          System/Libraries
 Summary:        An audio sub system
 BuildRequires:  DirectFB-devel => %directfbver
+BuildRequires:	libcddb-devel
+BuildRequires:	ffmpeg-devel
+BuildRequires:	libalsa-devel
+BuildRequires:	oggvorbis-devel
+BuildRequires:	mad-devel
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Provides:	FusionSound
 Obsoletes:	FusionSound
@@ -34,9 +40,6 @@ the playlist of the mixer thread in the master application.
 %package -n %libname
 Group:          System/Libraries
 Summary:        An audio sub sytem
-Provides:	lib%{name} = %version-%release
-Provides:       %obslibname
-Obsoletes:      %obslibname
 
 %description -n %libname
 FusionSound is a very powerful audio sub system in the
@@ -48,15 +51,16 @@ number of concurrent playbacks. Sample data is always stored
 in shared memory, starting a playback simply adds an entry to
 the playlist of the mixer thread in the master application.
 
-%package -n %libname-devel
+%package -n %develname
 Group:          Development/Other
 Summary:        An audio sub system
 Requires:	%libname = %version-%release
 Provides:	lib%name-devel = %version-%release
-Provides:	%obslibname-devel
-Obsoletes:	%obslibname-devel
+Provides:	%name-devel = %version-%release
+Obsoletes:	%mklibname -d FusionSound
+Obsoletes:	%mklibname -d fusionsound 0
 
-%description -n %libname-devel
+%description -n %develname
 FusionSound is a very powerful audio sub system in the
 manner of DirectFB and a technical demonstration of Fusion.
 
@@ -69,12 +73,14 @@ the playlist of the mixer thread in the master application.
 
 %prep
 %setup -q -n FusionSound-%{version}
+%patch0 -p1
 
 %build
-%configure
+%configure2_5x
 %make
 
 %install
+rm -fr %buildroot
 %makeinstall_std
 
 %clean
@@ -86,22 +92,30 @@ the playlist of the mixer thread in the master application.
 %files -n %name
 %defattr(-,root,root)
 %doc AUTHORS ChangeLog TODO
-%dir %_libdir/directfb-*/interfaces/IFusionSound
-%dir %_libdir/directfb-*/interfaces/IFusionSoundMusicProvider
-%_libdir/directfb-*/interfaces/*/*.so
 %_bindir/fs*
 %_mandir/*/%{name}*
+%dir %_libdir/interfaces/IFusionSound
+%_libdir/interfaces/IFusionSound/libifusionsound.*
+%dir %_libdir/interfaces/IFusionSoundMusicProvider
+%_libdir/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_cdda.*
+%_libdir/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_ffmpeg.*
+%_libdir/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_mad.*
+%_libdir/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_playlist.*
+%_libdir/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_vorbis.*
+%_libdir/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_wave.*
+%dir %_libdir/snddrivers
+%_libdir/snddrivers/libfusionsound_alsa.*
+%_libdir/snddrivers/libfusionsound_oss.*
+%_libdir/snddrivers/libfusionsound_wave.*
 
 %files -n %libname
 %defattr(-,root,root)
 %doc AUTHORS ChangeLog TODO
-%_libdir/*.so.*
+%_libdir/*.so.%{major}*
 
-%files -n %libname-devel
+%files -n %develname
 %defattr(-,root,root)
 %doc AUTHORS ChangeLog TODO
-%_libdir/directfb-*/interfaces/*/*.la
-%_libdir/directfb-*/snddrivers/lib%{name}*
 %_libdir/pkgconfig/fusionsound*.pc
 %_includedir/fusionsound 
 %_includedir/fusionsound-internal
