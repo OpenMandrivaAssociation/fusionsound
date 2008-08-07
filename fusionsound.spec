@@ -1,6 +1,6 @@
 %define name    fusionsound
 %define version 1.1.1
-%define release %mkrel 1
+%define release %mkrel 2
 
 %define api 1.1
 %define major 1
