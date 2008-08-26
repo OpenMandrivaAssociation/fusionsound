@@ -1,19 +1,21 @@
 %define name    fusionsound
 %define version 1.1.1
-%define release %mkrel 2
+%define snapdate 20080311
+%define release %mkrel 2.%{snapdate}.1
 
 %define api 1.1
 %define major 1
 %define libname %mklibname %{name} %{api} %{major}
 %define develname %mklibname %name -d
 %define directfbver %version
+%define dfbmoduledir %(pkg-config --variable=moduledir direct)
 
 Name:           %{name}
 Version:        %{version}
 Release:        %{release}
-License:        GPL
+License:        GPLv2+
 Url:            http://www.directfb.org/index.php?path=Platform%2FFusionSound
-Source0:        http://www.directfb.org/downloads/Core/FusionSound-%{version}.tar.gz
+Source0:        http://www.directfb.org/downloads/Core/FusionSound-%{snapdate}.tar.gz
 Patch0:		fusionsound-1.1.1-new-ffmpeg-header.patch
 Group:          System/Libraries
 Summary:        An audio sub system
@@ -72,10 +74,11 @@ the playlist of the mixer thread in the master application.
 
 
 %prep
-%setup -q -n FusionSound-%{version}
+%setup -q -n core/FusionSound.git
 %patch0 -p1
 
 %build
+./autogen.sh
 %configure2_5x
 %make
 
@@ -98,19 +101,19 @@ rm -fr %buildroot
 %doc AUTHORS ChangeLog TODO
 %_bindir/fs*
 %_mandir/*/%{name}*
-%dir %_libdir/interfaces/IFusionSound
-%_libdir/interfaces/IFusionSound/libifusionsound.*
-%dir %_libdir/interfaces/IFusionSoundMusicProvider
-%_libdir/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_cdda.*
-%_libdir/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_ffmpeg.*
-%_libdir/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_mad.*
-%_libdir/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_playlist.*
-%_libdir/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_vorbis.*
-%_libdir/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_wave.*
-%dir %_libdir/snddrivers
-%_libdir/snddrivers/libfusionsound_alsa.*
-%_libdir/snddrivers/libfusionsound_oss.*
-%_libdir/snddrivers/libfusionsound_wave.*
+%dir %{dfbmoduledir}/interfaces/IFusionSound
+%{dfbmoduledir}/interfaces/IFusionSound/libifusionsound.*
+%dir %{dfbmoduledir}/interfaces/IFusionSoundMusicProvider
+%{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_cdda.*
+%{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_ffmpeg.*
+%{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_mad.*
+%{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_playlist.*
+%{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_vorbis.*
+%{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_wave.*
+%dir %{dfbmoduledir}/snddrivers
+%{dfbmoduledir}/snddrivers/libfusionsound_alsa.*
+%{dfbmoduledir}/snddrivers/libfusionsound_oss.*
+%{dfbmoduledir}/snddrivers/libfusionsound_wave.*
 
 %files -n %libname
 %defattr(-,root,root)
