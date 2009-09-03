@@ -1,7 +1,7 @@
 %define name    fusionsound
 %define version 1.1.1
 %define snapdate 20080311
-%define release %mkrel 2.%{snapdate}.2
+%define release %mkrel 2.%{snapdate}.3
 
 %define api 1.1
 %define major 1
