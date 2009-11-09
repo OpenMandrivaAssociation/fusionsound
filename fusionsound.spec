@@ -1,7 +1,7 @@
 %define name    fusionsound
 %define version 1.1.1
-%define snapdate 20080311
-%define release %mkrel 2.%{snapdate}.3
+%define snapdate 20081101
+%define release %mkrel 2.%{snapdate}.1
 
 %define api 1.1
 %define major 1
@@ -17,8 +17,7 @@ License:        GPLv2+
 Group:          System/Libraries
 Summary:        An audio sub system
 Url:            http://www.directfb.org/index.php?path=Platform%2FFusionSound
-Source0:        http://www.directfb.org/downloads/Core/FusionSound-%{snapdate}.tar.gz
-Patch0:		    fusionsound-20080311-new-ffmpeg-header.patch
+Source0:        http://www.directfb.org/downloads/Core/FusionSound-%{snapdate}.tar.bz2
 Patch1:		    fusionsound-20080311-fix-format-errors.patch
 BuildRequires:  DirectFB-devel => %directfbver
 BuildRequires:	libcddb-devel
@@ -75,9 +74,8 @@ the playlist of the mixer thread in the master application.
 
 
 %prep
-%setup -q -n core/FusionSound.git
-%patch0 -p 2
-%patch1 -p 2
+%setup -q -n FusionSound
+%patch1 -p2
 
 %build
 autoreconf -fi
