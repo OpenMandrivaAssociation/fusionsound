@@ -1,0 +1,25 @@
+diff -urN FusionSound-1.6.2/interfaces/IFusionSoundMusicProvider/ifusionsoundmusicprovider_ffmpeg.c FusionSound-1.6.2-patched/interfaces/IFusionSoundMusicProvider/ifusionsoundmusicprovider_ffmpeg.c
+--- FusionSound-1.6.2/interfaces/IFusionSoundMusicProvider/ifusionsoundmusicprovider_ffmpeg.c	2012-09-21 03:01:15.000000000 +1100
++++ FusionSound-1.6.2-patched/interfaces/IFusionSoundMusicProvider/ifusionsoundmusicprovider_ffmpeg.c	2012-11-20 21:46:30.522851295 +1100
+@@ -1247,6 +1247,13 @@
+           return D_OOM();
+      }
+ 
++#if (LIBAVFORMAT_VERSION_MAJOR >= 54)
++     if (avformat_open_input( &data->ctx, filename, fmt, NULL ) < 0) {
++          D_ERROR( "IFusionSoundMusicProvider_FFmpeg: avformat_open_input() failed!\n" );
++          IFusionSoundMusicProvider_FFmpeg_Destruct( thiz );
++          return DR_FAILURE;
++      }
++#else
+      if (init_put_byte( &data->pb, data->iobuf, 4096, 0,
+                         (void*)data, av_read_callback, NULL,
+                         direct_stream_seekable( stream ) ? av_seek_callback : NULL ) < 0) {
+@@ -1260,6 +1267,7 @@
+           IFusionSoundMusicProvider_FFmpeg_Destruct( thiz );
+           return DR_FAILURE;
+      }
++#endif
+ 
+      if (av_find_stream_info( data->ctx ) < 0) {
+           D_ERROR( "IFusionSoundMusicProvider_FFmpeg: couldn't find stream info!\n" );

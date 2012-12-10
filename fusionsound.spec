@@ -1,33 +1,28 @@
-%define name    fusionsound
-%define version 1.1.1
-%define snapdate 20081101
-%define release %mkrel 2.%{snapdate}.3
+%define oname FusionSound
 
-%define api 1.1
-%define major 1
-%define libname %mklibname %{name} %{api} %{major}
-%define develname %mklibname %name -d
-%define directfbver %version
+%define major 2
+%define libname %mklibname %{name} %{major}
+%define develname %mklibname %{name} -d
+
 %define dfbmoduledir %(pkg-config --variable=moduledir direct)
 
-Name:           %{name}
-Version:        %{version}
-Release:        %{release}
-License:        GPLv2+
-Group:          System/Libraries
-Summary:        An audio sub system
-Url:            http://www.directfb.org/index.php?path=Platform%2FFusionSound
-Source0:        http://www.directfb.org/downloads/Core/FusionSound-%{snapdate}.tar.bz2
-Patch1:		    fusionsound-20080311-fix-format-errors.patch
-BuildRequires:  DirectFB-devel => %directfbver
-BuildRequires:	libcddb-devel
+Name:		fusionsound
+Version:	1.6.2
+Release:	1
+License:	GPLv2+
+Group:		System/Libraries
+Summary:	An audio sub system
+Url:		http://www.directfb.org
+Source0:	http://www.directfb.org/downloads/Core/%{oname}-%{version}.tar.gz
+Patch0:		FusionSound-1.6.2-ffmpeg1.0.patch
+Patch1:		fusionsound-20080311-fix-format-errors.patch
 BuildRequires:	ffmpeg-devel
-BuildRequires:	libalsa-devel
-BuildRequires:	oggvorbis-devel
-BuildRequires:	mad-devel
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
-Provides:	FusionSound
-Obsoletes:	FusionSound
+BuildRequires:	pkgconfig(alsa)
+BuildRequires:	pkgconfig(directfb)
+BuildRequires:	pkgconfig(libcddb)
+BuildRequires:	pkgconfig(mad)
+BuildRequires:	pkgconfig(vorbis)
+Provides:	%{oname} = %{version}-%{release}
 
 %description
 FusionSound is a very powerful audio sub system in the
@@ -39,11 +34,11 @@ number of concurrent playbacks. Sample data is always stored
 in shared memory, starting a playback simply adds an entry to
 the playlist of the mixer thread in the master application.
 
-%package -n %libname
-Group:          System/Libraries
-Summary:        An audio sub sytem
+%package -n %{libname}
+Group:		System/Libraries
+Summary:	An audio sub sytem
 
-%description -n %libname
+%description -n %{libname}
 FusionSound is a very powerful audio sub system in the
 manner of DirectFB and a technical demonstration of Fusion. 
 
@@ -53,16 +48,14 @@ number of concurrent playbacks. Sample data is always stored
 in shared memory, starting a playback simply adds an entry to
 the playlist of the mixer thread in the master application.
 
-%package -n %develname
-Group:          Development/Other
-Summary:        An audio sub system
-Requires:	%libname = %version-%release
-Provides:	lib%name-devel = %version-%release
-Provides:	%name-devel = %version-%release
-Obsoletes:	%mklibname -d FusionSound
-Obsoletes:	%mklibname -d fusionsound 0
+%package -n %{develname}
+Group:		Development/Other
+Summary:	An audio sub system
+Requires:	%{libname} = %{version}-%{release}
+Provides:	lib%{name}-devel = %{version}-%{release}
+Provides:	%{name}-devel = %{version}-%{release}
 
-%description -n %develname
+%description -n %{develname}
 FusionSound is a very powerful audio sub system in the
 manner of DirectFB and a technical demonstration of Fusion.
 
@@ -74,7 +67,8 @@ the playlist of the mixer thread in the master application.
 
 
 %prep
-%setup -q -n FusionSound
+%setup -q -n %{oname}-%{version}
+%patch0 -p1
 %patch1 -p2
 
 %build
@@ -83,24 +77,12 @@ autoreconf -fi
 %make
 
 %install
-rm -fr %buildroot
 %makeinstall_std
 
-%clean
-%{__rm} -rf $RPM_BUILD_ROOT
-
-%if %mdkversion < 200900
-%post -n %libname -p /sbin/ldconfig
-%endif
-%if %mdkversion < 200900
-%postun -n %libname -p /sbin/ldconfig
-%endif
-
-%files -n %name
-%defattr(-,root,root)
+%files
 %doc AUTHORS ChangeLog TODO
-%_bindir/fs*
-%_mandir/*/%{name}*
+%{_bindir}/fs*
+%{_mandir}/*/%{name}*
 %dir %{dfbmoduledir}/interfaces/IFusionSound
 %{dfbmoduledir}/interfaces/IFusionSound/libifusionsound.*
 %dir %{dfbmoduledir}/interfaces/IFusionSoundMusicProvider
@@ -115,16 +97,13 @@ rm -fr %buildroot
 %{dfbmoduledir}/snddrivers/libfusionsound_oss.*
 %{dfbmoduledir}/snddrivers/libfusionsound_wave.*
 
-%files -n %libname
-%defattr(-,root,root)
-%doc AUTHORS ChangeLog TODO
-%_libdir/*.so.%{major}*
+%files -n %{libname}
+%{_libdir}/*.so.%{major}*
 
-%files -n %develname
-%defattr(-,root,root)
+%files -n %{develname}
 %doc AUTHORS ChangeLog TODO
-%_libdir/pkgconfig/fusionsound*.pc
-%_includedir/fusionsound 
-%_includedir/fusionsound-internal
-%_libdir/*.so
-%_libdir/*.la
+%{_libdir}/pkgconfig/fusionsound*.pc
+%{_includedir}/fusionsound
+%{_includedir}/fusionsound-internal
+%{_libdir}/*.so
+
