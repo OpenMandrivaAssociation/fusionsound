@@ -1,8 +1,9 @@
 %define oname FusionSound
 
 %define major 2
-%define libname %mklibname %{name} %{major}
-%define develname %mklibname %{name} -d
+%define	api	1.6
+%define libname %mklibname %{name} %{api} %{major}
+%define develname %mklibname %{name} %{api} -d
 
 %define dfbmoduledir %(pkg-config --variable=moduledir direct)
 
