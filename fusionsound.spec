@@ -7,15 +7,14 @@
 %define dfbmoduledir %(pkg-config --variable=moduledir direct)
 
 Name:		fusionsound
-Version:	1.6.2
+Version:	1.6.3
 Release:	1
 License:	GPLv2+
 Group:		System/Libraries
 Summary:	An audio sub system
 Url:		http://www.directfb.org
-Source0:	http://www.directfb.org/downloads/Core/%{oname}-%{version}.tar.gz
-Patch0:		FusionSound-1.6.2-ffmpeg1.0.patch
-Patch1:		fusionsound-20080311-fix-format-errors.patch
+Source0:	http://www.directfb.org/downloads/Core/FusionSound/%{oname}-%{version}.tar.gz
+Patch0:		FusionSound-1.6.3-ffmpeg2.patch
 BuildRequires:	ffmpeg-devel
 BuildRequires:	pkgconfig(alsa)
 BuildRequires:	pkgconfig(directfb)
@@ -69,11 +68,19 @@ the playlist of the mixer thread in the master application.
 %prep
 %setup -q -n %{oname}-%{version}
 %patch0 -p1
-%patch1 -p2
+autoreconf -fi
 
 %build
-autoreconf -fi
-%configure2_5x
+%configure2_5x	--with-cdda \
+		--with-ffmpeg \
+		--with-mad \
+		--with-timidity \
+		--with-wave \
+		--with-playlist \
+		--with-voodoo \
+		--with-vorbis \
+		--enable-ieee-floats \
+		--enable-module
 %make
 
 %install
@@ -94,6 +101,7 @@ autoreconf -fi
 %{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_wave.*
 %dir %{dfbmoduledir}/snddrivers
 %{dfbmoduledir}/snddrivers/libfusionsound_alsa.*
+%{dfbmoduledir}/snddrivers/libfusionsound_dummy.*
 %{dfbmoduledir}/snddrivers/libfusionsound_oss.*
 %{dfbmoduledir}/snddrivers/libfusionsound_wave.*
 

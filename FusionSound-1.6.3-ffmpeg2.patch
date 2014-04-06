@@ -1,0 +1,113 @@
+--- FusionSound-1.6.3/interfaces/IFusionSoundMusicProvider/ifusionsoundmusicprovider_ffmpeg.c.ffmpeg2~	2013-01-18 15:45:32.000000000 +0100
++++ FusionSound-1.6.3/interfaces/IFusionSoundMusicProvider/ifusionsoundmusicprovider_ffmpeg.c	2014-04-06 19:23:07.423833723 +0200
+@@ -41,6 +41,8 @@
+ 
+ #include <misc/sound_util.h>
+ 
++#define MAX_AUDIO_FRAME_SIZE 192000
++#define FF_API_OLD_METADATA2 0
+ #include <libavcodec/avcodec.h>
+ #include <libavformat/avformat.h>
+ 
+@@ -436,11 +438,11 @@ IFusionSoundMusicProvider_FFmpeg_Destruc
+           /* Ugly hack to fix a bug (segfault) in url_fclose() */
+           if (!(iformat->flags & AVFMT_NOFILE)) {
+                iformat->flags |= AVFMT_NOFILE;
+-               av_close_input_file( data->ctx );
++               avformat_close_input( &data->ctx );
+                iformat->flags ^= AVFMT_NOFILE;
+           }
+           else {
+-               av_close_input_file( data->ctx );
++               avformat_close_input( &data->ctx );
+           }
+      }
+ 
+@@ -647,7 +649,7 @@ FFmpegStreamThread( DirectThread *thread
+                }
+           }
+ 
+-          len = AVCODEC_MAX_AUDIO_FRAME_SIZE;
++          len = MAX_AUDIO_FRAME_SIZE;
+ 
+ #if (LIBAVFORMAT_VERSION_MAJOR >= 52)
+           decoded = avcodec_decode_audio3( data->codec,
+@@ -772,7 +774,7 @@ IFusionSoundMusicProvider_FFmpeg_PlayToS
+      }
+ 
+      if (!data->buf) {
+-          data->buf = D_MALLOC( AVCODEC_MAX_AUDIO_FRAME_SIZE );
++          data->buf = D_MALLOC( MAX_AUDIO_FRAME_SIZE );
+           if (!data->buf) {
+                pthread_mutex_unlock( &data->lock );
+                return DR_NOLOCALMEMORY;
+@@ -862,7 +864,7 @@ FFmpegBufferThread( DirectThread *thread
+                }
+           }
+ 
+-          len = AVCODEC_MAX_AUDIO_FRAME_SIZE;
++          len = MAX_AUDIO_FRAME_SIZE;
+ 
+ #if (LIBAVFORMAT_VERSION_MAJOR >= 53)
+           decoded = avcodec_decode_audio3( data->codec,
+@@ -1001,7 +1003,7 @@ IFusionSoundMusicProvider_FFmpeg_PlayToB
+      }
+ 
+      if (!data->buf) {
+-          data->buf = D_MALLOC( AVCODEC_MAX_AUDIO_FRAME_SIZE );
++          data->buf = D_MALLOC( MAX_AUDIO_FRAME_SIZE );
+           if (!data->buf) {
+                pthread_mutex_unlock( &data->lock );
+                return DR_NOLOCALMEMORY;
+@@ -1279,6 +1281,13 @@ Construct( IFusionSoundMusicProvider *th
+           return D_OOM();
+      }
+ 
++#if (LIBAVFORMAT_VERSION_MAJOR >= 54)
++     if (avformat_open_input( &data->ctx, filename, fmt, NULL ) < 0) {
++          D_ERROR( "IFusionSoundMusicProvider_FFmpeg: avformat_open_input() failed!\n" );
++          IFusionSoundMusicProvider_FFmpeg_Destruct( thiz );
++          return DR_FAILURE;
++      }
++#else
+      if (init_put_byte( &data->pb, data->iobuf, 4096, 0,
+                         (void*)data, av_read_callback, NULL,
+                         direct_stream_seekable( stream ) ? av_seek_callback : NULL ) < 0) {
+@@ -1292,6 +1301,7 @@ Construct( IFusionSoundMusicProvider *th
+           IFusionSoundMusicProvider_FFmpeg_Destruct( thiz );
+           return DR_FAILURE;
+      }
++#endif
+ 
+      if (av_find_stream_info( data->ctx ) < 0) {
+           D_ERROR( "IFusionSoundMusicProvider_FFmpeg: couldn't find stream info!\n" );
+@@ -1318,7 +1328,7 @@ Construct( IFusionSoundMusicProvider *th
+ 
+      data->codec = data->st->codec;
+      c = avcodec_find_decoder( data->codec->codec_id );
+-     if (!c || avcodec_open( data->codec, c ) < 0) {
++     if (!c || avcodec_open2( data->codec, c, NULL) < 0) {
+           D_ERROR( "IFusionSoundMusicProvider_FFmpeg: couldn't find audio decoder!\n" );
+           IFusionSoundMusicProvider_FFmpeg_Destruct( thiz );
+           return DR_FAILURE;
+--- FusionSound-1.6.3/src/core/core_sound.c.ffmpeg2~	2014-04-06 19:22:36.798939954 +0200
++++ FusionSound-1.6.3/src/core/core_sound.c	2014-04-06 19:25:22.919514910 +0200
+@@ -329,7 +329,8 @@ fs_core_create_buffer( CoreSound *core )
+      D_ASSERT( core->shared->buffer_pool != NULL );
+ 
+      /* Create a new object in the buffer pool. */
+-     return (CoreSoundBuffer*) fusion_object_create( core->shared->buffer_pool, core->world, 1 );
++     return (CoreSoundBuffer*) fusion_object_create( core->shared->buffer_pool, core->world, core->fusion_id );
++
+ }
+ 
+ CorePlayback *
+@@ -340,7 +341,7 @@ fs_core_create_playback( CoreSound *core
+      D_ASSERT( core->shared->playback_pool != NULL );
+ 
+      /* Create a new object in the playback pool. */
+-     return (CorePlayback*) fusion_object_create( core->shared->playback_pool, core->world, 1 );
++     return (CorePlayback*) fusion_object_create( core->shared->playback_pool, core->world, core->fusion_id );
+ }
+ 
+ DirectResult
