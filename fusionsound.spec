@@ -1,9 +1,9 @@
-%define oname FusionSound
+%define	oname	FusionSound
 
-%define major 2
+%define	major	2
 %define	api	1.6
-%define libname %mklibname %{name} %{api} %{major}
-%define develname %mklibname %{name} %{api} -d
+%define	libname	%mklibname %{name} %{api} %{major}
+%define	devname	%mklibname %{name} %{api} -d
 
 %define dfbmoduledir %(pkg-config --variable=moduledir direct)
 
@@ -48,14 +48,14 @@ number of concurrent playbacks. Sample data is always stored
 in shared memory, starting a playback simply adds an entry to
 the playlist of the mixer thread in the master application.
 
-%package -n %{develname}
+%package -n %{devname}
 Group:		Development/Other
 Summary:	An audio sub system
 Requires:	%{libname} = %{version}-%{release}
 Provides:	lib%{name}-devel = %{version}-%{release}
 Provides:	%{name}-devel = %{version}-%{release}
 
-%description -n %{develname}
+%description -n %{devname}
 FusionSound is a very powerful audio sub system in the
 manner of DirectFB and a technical demonstration of Fusion.
 
@@ -109,7 +109,7 @@ autoreconf -fi
 %files -n %{libname}
 %{_libdir}/*.so.%{major}*
 
-%files -n %{develname}
+%files -n %{devname}
 %doc AUTHORS ChangeLog TODO
 %{_libdir}/pkgconfig/fusionsound*.pc
 %{_includedir}/fusionsound
