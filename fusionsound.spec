@@ -1,15 +1,15 @@
-%define	oname	FusionSound
+%define oname FusionSound
 
-%define	major	2
-%define	api	1.6
-%define	libname	%mklibname %{name} %{api} %{major}
-%define	devname	%mklibname %{name} %{api} -d
+%define major 2
+%define api 1.6
+%define libname %mklibname %{name} %{api} %{major}
+%define devname %mklibname %{name} %{api} -d
 
 %define dfbmoduledir %(pkg-config --variable=moduledir direct)
 
 Name:		fusionsound
 Version:	1.6.3
-Release:	1
+Release:	2
 License:	GPLv2+
 Group:		System/Libraries
 Summary:	An audio sub system
@@ -72,7 +72,8 @@ the playlist of the mixer thread in the master application.
 autoreconf -fi
 
 %build
-%configure2_5x	--with-cdda \
+%configure \
+		--with-cdda \
 		--with-ffmpeg \
 		--with-mad \
 		--with-timidity \
@@ -110,7 +111,6 @@ autoreconf -fi
 %{_libdir}/*.so.%{major}*
 
 %files -n %{devname}
-%doc AUTHORS ChangeLog TODO
 %{_libdir}/pkgconfig/fusionsound*.pc
 %{_includedir}/fusionsound
 %{_includedir}/fusionsound-internal
