@@ -1,5 +1,6 @@
-%define oname FusionSound
+%bcond_without bootstrap
 
+%define oname FusionSound
 %define major 2
 %define api 1.6
 %define libname %mklibname %{name} %{api} %{major}
@@ -16,12 +17,14 @@ Summary:	An audio sub system
 Url:		http://www.directfb.org
 Source0:	http://www.directfb.org/downloads/Core/FusionSound/%{oname}-%{version}.tar.gz
 Patch0:		FusionSound-1.6.3-ffmpeg2.patch
+%if !%{with bootstrap}
 BuildRequires:	ffmpeg-devel
 BuildRequires:	pkgconfig(alsa)
 BuildRequires:	pkgconfig(directfb)
 BuildRequires:	pkgconfig(libcddb)
 BuildRequires:	pkgconfig(mad)
 BuildRequires:	pkgconfig(vorbis)
+%endif
 Provides:	%{oname} = %{version}-%{release}
 
 %description
@@ -96,13 +99,15 @@ autoreconf -fi
 %{dfbmoduledir}/interfaces/IFusionSound/libifusionsound.*
 %dir %{dfbmoduledir}/interfaces/IFusionSoundMusicProvider
 %{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_cdda.*
+%if !%{with bootstrap}
 %{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_ffmpeg.*
 %{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_mad.*
-%{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_playlist.*
 %{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_vorbis.*
-%{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_wave.*
 %dir %{dfbmoduledir}/snddrivers
 %{dfbmoduledir}/snddrivers/libfusionsound_alsa.*
+%endif
+%{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_playlist.*
+%{dfbmoduledir}/interfaces/IFusionSoundMusicProvider/libifusionsoundmusicprovider_wave.*
 %{dfbmoduledir}/snddrivers/libfusionsound_dummy.*
 %{dfbmoduledir}/snddrivers/libfusionsound_oss.*
 %{dfbmoduledir}/snddrivers/libfusionsound_wave.*
@@ -115,4 +120,3 @@ autoreconf -fi
 %{_includedir}/fusionsound
 %{_includedir}/fusionsound-internal
 %{_libdir}/*.so
-
