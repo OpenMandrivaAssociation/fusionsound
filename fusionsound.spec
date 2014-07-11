@@ -10,7 +10,7 @@
 
 Name:		fusionsound
 Version:	1.6.3
-Release:	3
+Release:	4
 License:	GPLv2+
 Group:		System/Libraries
 Summary:	An audio sub system
