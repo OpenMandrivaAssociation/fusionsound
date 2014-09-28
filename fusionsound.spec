@@ -10,13 +10,14 @@
 
 Name:		fusionsound
 Version:	1.6.3
-Release:	4
+Release:	5
 License:	GPLv2+
 Group:		System/Libraries
 Summary:	An audio sub system
 Url:		http://www.directfb.org
 Source0:	http://www.directfb.org/downloads/Core/FusionSound/%{oname}-%{version}.tar.gz
 Patch0:		FusionSound-1.6.3-ffmpeg2.patch
+Patch1:		FusionSound-1.6.3-ffmpeg2.4.patch
 %if !%{with bootstrap}
 BuildRequires:	ffmpeg-devel
 BuildRequires:	pkgconfig(alsa)
@@ -71,7 +72,7 @@ the playlist of the mixer thread in the master application.
 
 %prep
 %setup -q -n %{oname}-%{version}
-%patch0 -p1
+%apply_patches
 autoreconf -fi
 
 %build

@@ -1,0 +1,11 @@
+--- ./interfaces/IFusionSoundMusicProvider/ifusionsoundmusicprovider_ffmpeg.c.orig	2014-09-28 23:46:54.357398380 +0100
++++ ./interfaces/IFusionSoundMusicProvider/ifusionsoundmusicprovider_ffmpeg.c	2014-09-28 23:47:04.573397627 +0100
+@@ -1293,7 +1293,7 @@
+      }
+ #endif
+ 
+-     if (av_find_stream_info( data->ctx ) < 0) {
++     if (avformat_find_stream_info( data->ctx, NULL ) < 0) {
+           D_ERROR( "IFusionSoundMusicProvider_FFmpeg: couldn't find stream info!\n" );
+           IFusionSoundMusicProvider_FFmpeg_Destruct( thiz );
+           return DR_FAILURE;
