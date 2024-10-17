@@ -14,7 +14,7 @@ Release:	5
 License:	GPLv2+
 Group:		System/Libraries
 Summary:	An audio sub system
-Url:		http://www.directfb.org
+Url:		https://www.directfb.org
 Source0:	http://www.directfb.org/downloads/Core/FusionSound/%{oname}-%{version}.tar.gz
 Patch0:		FusionSound-1.6.3-ffmpeg2.patch
 Patch1:		FusionSound-1.6.3-ffmpeg2.4.patch
